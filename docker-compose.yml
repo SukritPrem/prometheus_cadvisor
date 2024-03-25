@@ -1,0 +1,30 @@
+version: "3"
+services:
+  prometheus:
+    build:
+      context: ./prometheus/
+    image: prometheus
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    depends_on:
+      - cadvisor
+  cadvisor:
+    build:
+      context: .
+    image: test-cadvisor
+    container_name: cadvisor
+    privileged: true
+    devices:
+      - /dev/kmsg:/dev/kmsg
+    volumes:
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /etc/machine-id:/etc/machine-id:ro
+      - /var/lib/dbus/machine-id:/var/lib/dbus/machine-id:ro
+  nginx:
+    image: nginx:latest
+    ports:
+      - "8080:80"
